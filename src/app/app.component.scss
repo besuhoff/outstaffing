@@ -1,0 +1,11 @@
+.field {
+  &::after {
+    display: block;
+    content: '';
+    clear: both;
+  }
+
+  &__column {
+    float: left;
+  }
+}
