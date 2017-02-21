@@ -1,12 +1,29 @@
-<h1>Development field</h1>
+<div class="col">
+  <h1>Original task</h1>
 
-<div class="field" [style.width]="field.width * scale + 'px'" [style.height]="field.height * scale + 'px'">
-  <div *ngFor="let line of field.points" [style.width]="scale + 'px'" class="field__column">
-    <div *ngFor="let point of line"
-         class="field__pixel"
-         [style.width]="scale + 'px'"
-         [style.height]="scale + 'px'"
-         [style.background-color]="point.language?.color">
+  <div class="field" [style.width]="field.width * scale + 'px'" [style.height]="field.height * scale + 'px'">
+    <div *ngFor="let line of field.points" [style.width]="scale + 'px'" class="field__column">
+      <div *ngFor="let point of line"
+           class="field__pixel"
+           [style.width]="scale + 'px'"
+           [style.height]="scale + 'px'"
+           [style.background-color]="point.language?.color">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col">
+  <h1>Development process</h1>
+
+  <div class="field" [style.width]="developmentField.width * scale + 'px'" [style.height]="developmentField.height * scale + 'px'">
+    <div *ngFor="let line of developmentField.points" [style.width]="scale + 'px'" class="field__column">
+      <div *ngFor="let point of line"
+           class="field__pixel"
+           [style.width]="scale + 'px'"
+           [style.height]="scale + 'px'"
+           [style.background-color]="point.language?.color">
+      </div>
     </div>
   </div>
 </div>

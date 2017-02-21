@@ -9,11 +9,14 @@ import { DevelopmentField } from './development-field';
 })
 export class AppComponent implements OnInit {
   public field: DevelopmentField;
+  public developmentField: DevelopmentField;
   public scale: number = 4;
 
-  constructor(private _gameService: GameService) { }
+  public constructor(private _gameService: GameService) { }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.field = this._gameService.generate();
+
+    this.developmentField = this.field.clone(false);
   }
 }

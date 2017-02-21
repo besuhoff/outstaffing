@@ -40,7 +40,7 @@ export class DevelopmentField {
   }
 
   public drawFigure(figure: DevelopmentFigure): void {
-    const field: DevelopmentField = new DevelopmentField(this.width, this.height);
+    const field: DevelopmentField = this.clone(false);
 
     figure.points.forEach((point: Point, index: number) => {
       field.drawLine(point, figure.points[(index + 1) % figure.points.length], figure.language);
@@ -110,8 +110,8 @@ export class DevelopmentField {
   public merge(field: DevelopmentField): void {
     for (let i: number = 0; i < field.width; i++) {
       for (let j: number = 0; j < field.height; j++) {
-        if (field.points[i][j].isImplemented()) {
-          this.points[i][j].implement(field.points[i][j].language);
+        if (field.pointAt(i, j).isImplemented()) {
+          this.pointAt(i, j).implement(field.pointAt(i, j).language);
         }
       }
     }
@@ -123,14 +123,26 @@ export class DevelopmentField {
     });
   }
 
-  public clone(): DevelopmentField {
+  public clone(cloneFigures): DevelopmentField {
     const field: DevelopmentField = new DevelopmentField(this._width, this._height);
 
-    if (this._figures.length) {
+    if (cloneFigures && this._figures.length) {
       field.drawFigures(this._figures);
     }
 
     return field;
+  }
+
+  public pointAt(x: number, y: number): DevelopmentPoint {
+    return this._points[x][y];
+  }
+
+  public selectRandomPointByLanguages(languages: Language[]): DevelopmentPoint {
+    const allPoints: DevelopmentPoint[] = this._points
+      .reduce((points: DevelopmentPoint[], line: DevelopmentPoint[]) => points.concat(line), [])
+      .filter((point: DevelopmentPoint) => languages.indexOf(point.language) !== -1);
+
+    return allPoints[Math.floor(Math.random() * allPoints.length)];
   }
 
   public get width(): number {
