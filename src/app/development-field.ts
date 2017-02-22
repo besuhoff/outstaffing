@@ -3,6 +3,7 @@ import { Figure } from './figure';
 import { Point } from './point';
 import { DevelopmentFigure } from './development-figure';
 import { Language } from './language';
+import { GameError } from './game-error';
 
 export class DevelopmentField {
   protected _points: DevelopmentPoint[][];
@@ -66,10 +67,7 @@ export class DevelopmentField {
 
         for (const dimensions of points) {
           if (
-            dimensions.x >= 0 &&
-            dimensions.y >= 0 &&
-            dimensions.x < this.width &&
-            dimensions.y < this.height &&
+            this.hasPointAt(dimensions.x, dimensions.y) &&
             stack.indexOf(this._points[dimensions.x][dimensions.y]) === -1 &&
             !this._points[dimensions.x][dimensions.y].isImplemented()
           ) {
@@ -137,12 +135,32 @@ export class DevelopmentField {
     return this._points[x][y];
   }
 
-  public selectRandomPointByLanguages(languages: Language[]): DevelopmentPoint {
-    const allPoints: DevelopmentPoint[] = this._points
-      .reduce((points: DevelopmentPoint[], line: DevelopmentPoint[]) => points.concat(line), [])
-      .filter((point: DevelopmentPoint) => languages.indexOf(point.language) !== -1);
+  public hasPointAt(x: number, y: number): boolean {
+    return x >= 0 && y >= 0 && x < this.width && y < this.height;
+  }
 
-    return allPoints[Math.floor(Math.random() * allPoints.length)];
+  public implementedPoints(languages: Language[] = []): DevelopmentPoint[] {
+    let allPoints = this._points
+      .reduce((points: DevelopmentPoint[], line: DevelopmentPoint[]) => points.concat(line), []);
+
+    if (languages.length) {
+      allPoints = allPoints.filter((point: DevelopmentPoint) => languages.indexOf(point.language) !== -1);
+    }
+
+    return allPoints;
+  }
+
+  public similarity(field: DevelopmentField): number {
+    if (field.width !== this.width || field.height !== this.height) {
+      throw new GameError(
+        `Fields are of not equal dimensions: ${field.width}x${field.height} vs ${this.width}x${this.height}`
+      );
+    } else {
+      return this.points
+        .reduce((points: DevelopmentPoint[], line: DevelopmentPoint[]) => points.concat(line), [])
+        .filter((point: DevelopmentPoint) => field.pointAt(point.x, point.y).language === point.language)
+        .length / (this.width * this.height);
+    }
   }
 
   public get width(): number {

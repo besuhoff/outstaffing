@@ -1,10 +1,11 @@
 <div class="col">
-  <h1>Original task</h1>
+  <h1>{{project.name}}</h1>
 
-  <div class="field" [style.width]="field.width * scale + 'px'" [style.height]="field.height * scale + 'px'">
-    <div *ngFor="let line of field.points" [style.width]="scale + 'px'" class="field__column">
+  <div class="field" [style.width]="project.field.width * scale + 'px'" [style.height]="project.field.height * scale + 'px'">
+    <div *ngFor="let line of project.field.points" [style.width]="scale + 'px'" class="field__column">
       <div *ngFor="let point of line"
            class="field__pixel"
+           [title]="point.language?.name || 'Not implemented'"
            [style.width]="scale + 'px'"
            [style.height]="scale + 'px'"
            [style.background-color]="point.language?.color">
@@ -14,16 +15,19 @@
 </div>
 
 <div class="col">
-  <h1>Development process</h1>
+  <h1>Development ({{percentComplete() | number:'1.0-0'}}%)</h1>
 
-  <div class="field" [style.width]="developmentField.width * scale + 'px'" [style.height]="developmentField.height * scale + 'px'">
-    <div *ngFor="let line of developmentField.points" [style.width]="scale + 'px'" class="field__column">
+  <div class="field" [style.width]="project.developmentField.width * scale + 'px'" [style.height]="project.developmentField.height * scale + 'px'">
+    <div *ngFor="let line of project.developmentField.points" [style.width]="scale + 'px'" class="field__column">
       <div *ngFor="let point of line"
            class="field__pixel"
+           [title]="point.language?.name || 'Not implemented'"
            [style.width]="scale + 'px'"
            [style.height]="scale + 'px'"
            [style.background-color]="point.language?.color">
       </div>
     </div>
   </div>
+
+  <h3>Bug reports length: {{backlog.length()}} (closed: {{backlog.length('closed')}})</h3>
 </div>

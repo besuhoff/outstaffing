@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GameService } from './game.service';
-import { DevelopmentField } from './development-field';
+import { Project } from './project';
+import { Backlog } from './backlog';
 
 @Component({
   selector: 'app-root',
@@ -8,15 +9,20 @@ import { DevelopmentField } from './development-field';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  public field: DevelopmentField;
-  public developmentField: DevelopmentField;
+  public project: Project;
   public scale: number = 4;
+  public backlog: Backlog = Backlog.getInstance();
 
   public constructor(private _gameService: GameService) { }
 
-  public ngOnInit() {
-    this.field = this._gameService.generate();
+  public ngOnInit(): void {
+    this._gameService.createProject();
+    this.project = this._gameService.project;
+    this._gameService.setTeam();
+    this._gameService.start();
+  }
 
-    this.developmentField = this.field.clone(false);
+  public percentComplete(): number {
+    return this.project.amountComplete() * 100;
   }
 }
