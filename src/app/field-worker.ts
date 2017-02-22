@@ -26,16 +26,16 @@ export abstract class FieldWorker extends TeamMember {
   }
 
   protected _howManyPointsShouldBeMade(): number {
-    return Math.floor((Number(new Date()) - this._workingMilliseconds) / this._millisecondsPerPoint());
+    return Math.floor((+(new Date()) - this._workingMilliseconds) / this._millisecondsPerPoint());
   }
 
   protected _millisecondsPerPoint(): number {
-    return (60000 / this._speed) / Game.speed;
+    return (1000 / this._speed) / Game.speed;
   }
 
   protected _logStartWork(): void {
     window['console'].log(`${this.name} started work on ${this.project.name} at ${new Date()}`);
-    this._workingMilliseconds = Number(new Date());
+    this._workingMilliseconds = +(new Date());
   }
 
   protected _logStopWork(): void {

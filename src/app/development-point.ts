@@ -12,10 +12,6 @@ export class DevelopmentPoint extends Point {
     return this._language !== null;
   }
 
-  public destruct(): void {
-    this._language = null;
-  }
-
   public get language(): Language {
     return this._language;
   }

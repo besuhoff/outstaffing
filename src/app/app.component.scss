@@ -1,10 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Bree+Serif');
-
-h1, h2, h3, h4, h5 {
-  font-family: Bree Serif, serif;
-  font-weight: 400;
-}
-
 .field {
   border: 1px dashed #e0e0e0;
   box-sizing: content-box;
@@ -18,6 +11,20 @@ h1, h2, h3, h4, h5 {
 
   &__column {
     float: left;
+    width: 4px;
+  }
+
+  &__pixel {
+    width: 4px;
+    height: 4px;
+
+    &--status-open {
+      background-color: #f00;
+    }
+
+    &--status-closed {
+      background-color: #9f9;
+    }
   }
 }
 

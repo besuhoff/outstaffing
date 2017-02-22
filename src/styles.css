@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css?family=Bree+Serif');
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
+h1, h2, h3, h4, h5 {
+  font-family: Bree Serif, serif;
+  font-weight: 400;
+}
+
+body {
+  font-family: Lato, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}

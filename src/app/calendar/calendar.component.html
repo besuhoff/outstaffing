@@ -1,0 +1,9 @@
+<div class="calendar">
+  <div class="calendar__year">{{year}}</div>
+  <div class="calendar__month" [class.calendar__month--active]="isActive(month)" *ngFor="let month of months">
+    <div class="calendar__month-name">{{month.name}}</div>
+    <div class="calendar__days">
+      <div class="calendar__day calendar__day--{{day.getDay()}}" [class.calendar__day--passed]="isPassed(day)" *ngFor="let day of month.days"></div>
+    </div>
+  </div>
+</div>

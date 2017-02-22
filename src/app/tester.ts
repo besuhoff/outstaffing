@@ -11,7 +11,7 @@ export class Tester extends FieldWorker {
         for (let i: number = 0; i < pointsToBeMade; i++) {
           const point: DevelopmentPoint = this._pickRandomPoint();
           if (point.language !== this.project.field.pointAt(point.x, point.y).language) {
-            Backlog.getInstance().reportBug(point, this.project.field.pointAt(point.x, point.y).language);
+            this.project.backlog.reportBug(point, this.project.field.pointAt(point.x, point.y).language);
           }
         }
       }

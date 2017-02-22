@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameService } from './game.service';
 import { Project } from './project';
-import { Backlog } from './backlog';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +9,6 @@ import { Backlog } from './backlog';
 })
 export class AppComponent implements OnInit {
   public project: Project;
-  public scale: number = 4;
-  public backlog: Backlog = Backlog.getInstance();
 
   public constructor(private _gameService: GameService) { }
 
@@ -22,7 +19,7 @@ export class AppComponent implements OnInit {
     this._gameService.start();
   }
 
-  public percentComplete(): number {
+  public get percentComplete(): number {
     return this.project.amountComplete() * 100;
   }
 }

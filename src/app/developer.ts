@@ -1,13 +1,12 @@
 import { Language } from './language';
 import { DevelopmentPoint } from './development-point';
 import { DevelopmentField } from './development-field';
-import { GameError } from './game-error';
 import { FieldWorker } from './field-worker';
-import { Backlog } from './backlog';
 import { BugReport } from './bug-report';
 
 export class Developer extends FieldWorker {
   private _queue: DevelopmentPoint[] = [];
+  private _currentLanguage: Language;
 
   public constructor(name: string,
                      desiredSalary: number,
@@ -28,10 +27,10 @@ export class Developer extends FieldWorker {
         this._logWork(pointsToBeMade);
         for (let i: number = 0; i < pointsToBeMade; i++) {
           // Try bugReports
-          const bugReport: BugReport = Backlog.getInstance().findReportForDeveloper(this);
+          const bugReport: BugReport = this.project.backlog.findReportForDeveloper(this);
           if (bugReport) {
-            bugReport.point.implement(bugReport.expectedLanguage);
-            bugReport.close();
+            this.project.developmentField.implementPoint(bugReport.point, bugReport.expectedLanguage);
+            this.project.backlog.closeReport(bugReport);
             continue;
           }
 
@@ -40,12 +39,14 @@ export class Developer extends FieldWorker {
             const point: DevelopmentPoint = this._pickRandomPoint();
             if (point) {
               this._queue = [point];
+            } else {
+              this._queue = [];
             }
           }
 
           if (this._queue.length) {
             const point: DevelopmentPoint = this._queue.pop();
-            point.implement(this._languages[0]);
+            this.project.developmentField.implementPoint(point, this._currentLanguage);
 
             // Add neighbor points to queue
             const points: {x: number, y: number}[] = [
@@ -82,6 +83,12 @@ export class Developer extends FieldWorker {
 
   public knowsLanguage(language: Language): boolean {
     return this._languages.indexOf(language) !== -1;
+  }
+
+  public chooseLanguage(language: Language) {
+    if (this.knowsLanguage(language)) {
+      this._currentLanguage = language;
+    }
   }
 
   public get languages(): Language[] {

@@ -4,24 +4,12 @@ import { Point } from './point';
 import { DevelopmentFigure } from './development-figure';
 import { Language } from './language';
 import { GameError } from './game-error';
+import { Field } from './field';
 
-export class DevelopmentField {
-  protected _points: DevelopmentPoint[][];
+export class DevelopmentField extends Field<DevelopmentPoint> {
   protected _figures: DevelopmentFigure[] = [];
-
-  public constructor(
-    protected _width: number,
-    protected _height: number,
-  ) {
-    this._points = [];
-    for (let i: number = 0; i < _width; i++) {
-      this._points[i] = [];
-
-      for (let j: number = 0; j < _height; j++) {
-        this._points[i].push(new DevelopmentPoint(i, j));
-      }
-    }
-  }
+  protected _implementedPoints: {[option: string]: DevelopmentPoint[]} = {};
+  private _usesCache: boolean = false;
 
   public static createFigureContainer(figures: Figure[]): DevelopmentField {
     let x: number = 0;
@@ -40,6 +28,10 @@ export class DevelopmentField {
     return new DevelopmentField(Math.ceil(x + 1), Math.ceil(y + 1));
   }
 
+  public useCache(useCache: boolean = true): void {
+    this._usesCache = useCache;
+  }
+
   public drawFigure(figure: DevelopmentFigure): void {
     const field: DevelopmentField = this.clone(false);
 
@@ -53,7 +45,7 @@ export class DevelopmentField {
     this._figures.push(figure);
   }
 
-  public floodFill(fillPoint: Point, language: Language) {
+  public floodFill(fillPoint: Point, language: Language): void {
     const stack: Point[] = [fillPoint];
 
     while (stack.length) {
@@ -121,7 +113,7 @@ export class DevelopmentField {
     });
   }
 
-  public clone(cloneFigures): DevelopmentField {
+  public clone(cloneFigures: boolean): DevelopmentField {
     const field: DevelopmentField = new DevelopmentField(this._width, this._height);
 
     if (cloneFigures && this._figures.length) {
@@ -131,23 +123,70 @@ export class DevelopmentField {
     return field;
   }
 
-  public pointAt(x: number, y: number): DevelopmentPoint {
-    return this._points[x][y];
-  }
+  public implementPoint(point: DevelopmentPoint, language: Language | null) {
+    if (language !== point.language) {
+      if (this._usesCache) {
+        let cache: DevelopmentPoint[];
+        let index: number;
 
-  public hasPointAt(x: number, y: number): boolean {
-    return x >= 0 && y >= 0 && x < this.width && y < this.height;
+        if (language) {
+          cache = this._implementedPoints[language.name];
+          if (cache) {
+            index = cache.indexOf(point);
+            if (index !== -1) {
+              cache.splice(index, 1);
+            }
+          }
+        }
+
+        cache = this._implementedPoints[''];
+        if (cache && !language) {
+          index = cache.indexOf(point);
+          if (index !== -1) {
+            cache.splice(index, 1);
+          }
+        }
+
+        if (cache && !point.language) {
+          cache.push(point);
+        }
+
+        if (point.language) {
+          cache = this._implementedPoints[point.language.name];
+          if (cache) {
+            cache.push(point);
+          }
+        }
+      }
+
+      point.implement(language);
+    }
   }
 
   public implementedPoints(languages: Language[] = []): DevelopmentPoint[] {
-    let allPoints = this._points
-      .reduce((points: DevelopmentPoint[], line: DevelopmentPoint[]) => points.concat(line), []);
+    if (this._usesCache) {
+      let points: DevelopmentPoint[] = [];
 
-    if (languages.length) {
-      allPoints = allPoints.filter((point: DevelopmentPoint) => languages.indexOf(point.language) !== -1);
+      if (languages.length) {
+        languages.forEach((language: Language) => {
+          if (!this._implementedPoints[language.name]) {
+            this._implementedPoints[language.name] = this._implementedPointsNoCache([language]);
+          }
+
+          points = points.concat(this._implementedPoints[language.name]);
+        });
+      } else {
+        if (!this._implementedPoints['']) {
+          this._implementedPoints[''] = this._implementedPointsNoCache();
+        }
+
+        points = this._implementedPoints[''];
+      }
+
+      return points;
+    } else {
+      return this._implementedPointsNoCache(languages);
     }
-
-    return allPoints;
   }
 
   public similarity(field: DevelopmentField): number {
@@ -156,22 +195,33 @@ export class DevelopmentField {
         `Fields are of not equal dimensions: ${field.width}x${field.height} vs ${this.width}x${this.height}`
       );
     } else {
-      return this.points
-        .reduce((points: DevelopmentPoint[], line: DevelopmentPoint[]) => points.concat(line), [])
-        .filter((point: DevelopmentPoint) => field.pointAt(point.x, point.y).language === point.language)
-        .length / (this.width * this.height);
+      let similarPoints: number = 0;
+
+      for (let i: number = 0; i < this.width; i++) {
+        for (let j: number = 0; j < this.height; j++) {
+          if (this._points[i][j].language === field.pointAt(i, j).language) {
+            similarPoints++;
+          }
+        }
+      }
+
+      return similarPoints / (this.width * this.height);
     }
   }
 
-  public get width(): number {
-    return this._width;
-  }
+  protected _createPoint(x: number, y: number): DevelopmentPoint {
+    return new DevelopmentPoint(x, y);
+  };
 
-  public get height(): number {
-    return this._height;
-  }
+  protected _implementedPointsNoCache(languages: Language[] = []): DevelopmentPoint[] {
+    let allPoints: DevelopmentPoint[] = this._flatPoints;
 
-  public get points(): DevelopmentPoint[][] {
-    return this._points;
+    if (languages.length) {
+      allPoints = allPoints.filter((point: DevelopmentPoint) => languages.indexOf(point.language) !== -1);
+    } else {
+      allPoints = allPoints.filter((point: DevelopmentPoint) => point.isImplemented());
+    }
+
+    return allPoints;
   }
 }
