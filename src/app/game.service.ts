@@ -24,19 +24,21 @@ export class GameService {
     new Language('ruby', '#910000'),
     new Language('javascript', '#b7961c'),
     new Language('php', '#777bb3'),
+    //
     new Language('python', '#3473a6'),
     new Language('c#', '#690081'),
-    new Language('html', '#9c3610'),
+    new Language('html', '#b13c11'),
+    //
     new Language('css', '#014173'),
   ];
 
   private _team: TeamMember[] = [];
 
-  private _availableFigures: Figure[] = [
+  private _availableFigures: {[optionName: string]: Figure} = {
     // "T" figure:
     //  ▓
     // ▓▓▓
-    new Figure(
+    T: new Figure(
       [
         new Point(0, 10),
         new Point(10, 10),
@@ -53,7 +55,7 @@ export class GameService {
     // "J" figure:
     // ▓▓▓
     //   ▓
-    new Figure(
+    J: new Figure(
       [
         new Point(0, 0),
         new Point(30, 0),
@@ -68,7 +70,7 @@ export class GameService {
     // "L" figure:
     // ▓▓▓
     // ▓
-    new Figure(
+    L: new Figure(
       [
         new Point(0, 0),
         new Point(30, 0),
@@ -82,7 +84,7 @@ export class GameService {
     // "O" figure:
     // ▓▓
     // ▓▓
-    new Figure(
+    O: new Figure(
       [
         new Point(0, 0),
         new Point(20, 0),
@@ -94,7 +96,7 @@ export class GameService {
     // "S" figure:
     //  ▓▓
     // ▓▓
-    new Figure(
+    S: new Figure(
       [
         new Point(0, 10),
         new Point(10, 10),
@@ -110,7 +112,7 @@ export class GameService {
     // "Z" figure:
     // ▓▓
     //  ▓▓
-    new Figure(
+    Z: new Figure(
       [
         new Point(0, 0),
         new Point(20, 0),
@@ -122,7 +124,18 @@ export class GameService {
         new Point(0, 10),
       ],
       new Point(5, 5)),
-  ];
+
+    // "I" figure:
+    // ▓▓▓▓
+    I: new Figure(
+      [
+        new Point(0, 0),
+        new Point(40, 0),
+        new Point(40, 10),
+        new Point(0, 10),
+      ],
+      new Point(5, 5)),
+  };
 
   public constructor() {}
 
@@ -142,7 +155,7 @@ export class GameService {
         0.03,
         0.25,
         20,
-        [this._languages[1]],
+        [this._languages[1], this._languages[5],  this._languages[6]],
         0.01,
         0.01
       ),
@@ -153,7 +166,7 @@ export class GameService {
         0.03,
         0.25,
         20,
-        [this._languages[2]],
+        [this._languages[2], this._languages[5],  this._languages[6]],
         0.02,
         0.01
       ),
@@ -204,16 +217,18 @@ export class GameService {
   };
 
   public createProject(): void {
-    const figure1: DevelopmentFigure = DevelopmentFigure.fromFigure(this._availableFigures[0], this._languages[0]);
-    figure1.move(20, 20);
-    const figure2: DevelopmentFigure = DevelopmentFigure.fromFigure(this._availableFigures[5], this._languages[2]);
-    figure2.move(30, 0);
-    const figure3: DevelopmentFigure = DevelopmentFigure.fromFigure(this._availableFigures[3], this._languages[3]);
-    figure3.scale(1.5, 1.5);
-    const figure4: DevelopmentFigure = DevelopmentFigure.fromFigure(this._availableFigures[3], this._languages[1]);
-    figure4.move(50, 50);
-    const field: DevelopmentField = DevelopmentField.createFigureContainer([figure1, figure2, figure3, figure4]);
-    field.drawFigures([figure1, figure2, figure3, figure4]);
+    const figures: DevelopmentFigure[] = [
+      DevelopmentFigure.fromFigure(this._availableFigures['T'], this._languages[0]).move(20, 20),
+      DevelopmentFigure.fromFigure(this._availableFigures['Z'], this._languages[2]).move(30, 10),
+      DevelopmentFigure.fromFigure(this._availableFigures['I'], this._languages[5]).rotate(90).move(-15, 45),
+      DevelopmentFigure.fromFigure(this._availableFigures['S'], this._languages[6]).move(40, 30),
+      DevelopmentFigure.fromFigure(this._availableFigures['O'], this._languages[3]).scale(1.5, 1.5),
+      DevelopmentFigure.fromFigure(this._availableFigures['O'], this._languages[1]).move(50, 50),
+      DevelopmentFigure.fromFigure(this._availableFigures['J'], this._languages[1]).move(30, 0),
+    ];
+
+    const field: DevelopmentField = DevelopmentField.createFigureContainer(figures);
+    field.drawFigures(figures);
 
     this._project = new Project(
       'Tetris figures',

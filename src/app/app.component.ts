@@ -20,6 +20,6 @@ export class AppComponent implements OnInit {
   }
 
   public get percentComplete(): number {
-    return this.project.amountComplete() * 100;
+    return Math.floor(this.project.amountComplete() * 100);
   }
 }

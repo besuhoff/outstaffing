@@ -2,9 +2,7 @@ export class Point {
   public constructor(
     private _x: number,
     private _y: number
-  ) {
-
-  }
+  ) { }
 
   public get x(): number {
     return this._x;
@@ -15,6 +13,6 @@ export class Point {
   }
 
   public clone(): Point {
-    return new Point(this.x, this.y);
+    return new Point(this._x, this._y);
   }
 }

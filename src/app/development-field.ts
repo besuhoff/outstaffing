@@ -50,8 +50,8 @@ export class DevelopmentField extends Field<DevelopmentPoint> {
 
     while (stack.length) {
       const point: Point = stack.pop();
-      const x: number = Math.round(point.x);
-      const y: number = Math.round(point.y);
+      const x: number = Math.floor(point.x);
+      const y: number = Math.floor(point.y);
       if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
         this._points[x][y].implement(language);
 
@@ -71,27 +71,27 @@ export class DevelopmentField extends Field<DevelopmentPoint> {
   }
 
   public drawLine(a: Point, b: Point, language: Language): void {
-    const i0: number = Math.round(a.x);
-    const j0: number = Math.round(a.y);
-    const i1: number = Math.round(b.x);
-    const j1: number = Math.round(b.y);
+    const i0: number = Math.floor(a.x);
+    const j0: number = Math.floor(a.y);
+    const i1: number = Math.floor(b.x);
+    const j1: number = Math.floor(b.y);
 
     if (Math.abs(i1 - i0) >= Math.abs(j1 - j0)) {
       for (
         let i: number = i0;
-        ((i1 - i0 >= 0) && i < i1) || (((i1 - i0 < 0) && i > i1));
+        ((i1 - i0 >= 0) && i <= i1) || (((i1 - i0 < 0) && i > i1));
         i += ((i1 - i0 > 0) ? 1 : -1)
       ) {
-        const j: number = Math.round(j0 + (j1 - j0) * ((i - i0) / (i1 - i0)));
+        const j: number = Math.floor(j0 + (j1 - j0) * ((i - i0) / (i1 - i0)));
         this._points[i][j].implement(language);
       }
     } else {
       for (
         let j: number = j0;
-        ((j1 - j0 >= 0) && j < j1) || (((j1 - j0 < 0) && j > j1));
+        ((j1 - j0 >= 0) && j <= j1) || (((j1 - j0 < 0) && j > j1));
         j += ((j1 - j0 > 0) ? 1 : -1)
       ) {
-        const i: number = Math.round(i0 + (i1 - i0) * ((j - j0) / (j1 - j0)));
+        const i: number = Math.floor(i0 + (i1 - i0) * ((j - j0) / (j1 - j0)));
         this._points[i][j].implement(language);
       }
     }
