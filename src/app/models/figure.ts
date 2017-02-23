@@ -75,10 +75,19 @@ export class Figure {
     return this;
   }
 
-  public scale(scaleX: number = 1, scaleY: number = 1): this {
-    this._points = this._points.map((point: Point) => new Point(point.x * scaleX, point.y * scaleY));
+  public scale(scaleX: number = 1, scaleY: number = 1, center?: Point): this {
+    let dx: number = 0;
+    let dy: number = 0;
+
+    if (center) {
+      const rectangle: Figure = this.boundingRectangle();
+      dx = rectangle.points[0].x - center.x;
+      dy = rectangle.points[0].y - center.y;
+    }
+
+    this._points = this._points.map((point: Point) => new Point(point.x * scaleX + dx, point.y * scaleY + dy));
     if (this._fillPoint) {
-      this._fillPoint = new Point(this.fillPoint.x * scaleX, this.fillPoint.y * scaleY);
+      this._fillPoint = new Point(this.fillPoint.x * scaleX + dx, this.fillPoint.y * scaleY + dy);
     }
 
     return this;
@@ -87,10 +96,7 @@ export class Figure {
   public rotate(angle: number, center?: Point): this {
     if (!center) {
       const rectangle: Figure = this.boundingRectangle();
-      center = new Point(
-        rectangle.points[0].x + (rectangle.points[1].x - rectangle.points[0].x) / 2,
-        rectangle.points[0].y + (rectangle.points[2].y - rectangle.points[0].y) / 2
-      );
+      center = rectangle.points[0];
     }
 
     const angleRadians: number = angle * Math.PI / 180;

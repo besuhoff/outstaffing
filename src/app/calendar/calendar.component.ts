@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { GameService } from '../game.service';
+import { GameService } from '../services/game.service';
 
 type Month = {name: string, number: number, days: Date[] };
 

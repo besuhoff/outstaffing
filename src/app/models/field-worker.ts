@@ -30,7 +30,7 @@ export abstract class FieldWorker extends TeamMember {
   }
 
   protected _millisecondsPerPoint(): number {
-    return (1000 / this._speed) / Game.speed;
+    return (1000 / this._speed) / Game.instance().speed;
   }
 
   protected _logStartWork(): void {
